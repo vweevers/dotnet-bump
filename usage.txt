@@ -1,0 +1,26 @@
+dotnet-bump <target> [options] [file..]
+
+Bump to target version, one of:
+
+- major, minor, patch;
+- a specific version like 2.4.0 (must be semver).
+
+Files can be glob patterns or paths to a:
+
+- Visual Studio Solution (*.sln) (parsed to find projects)
+- Project (*.csproj or *.fsproj) (parsed to find AssemblyInfo)
+- C# or F# source code file;
+- Directory containing any of the above.
+
+Default is the current working directory. Files must reside
+in a git working tree (or multiple working trees).
+
+Options:
+
+--dry-run  -d  Print changes but don't make them
+--force    -f  Continue if git working tree(s) are dirty
+--no-commit    Don't commit and tag
+--no-glob      Disable globbing
+--verbose      Verbose output
+--version  -v  Print version and exit
+--help     -h  Print usage and exit

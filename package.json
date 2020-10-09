@@ -1,0 +1,68 @@
+{
+  "name": "dotnet-bump",
+  "version": "0.0.1",
+  "description": "CLI to increment and tag assembly version(s) in a .NET project",
+  "bin": "cli.js",
+  "license": "MIT",
+  "author": "Vincent Weevers",
+  "scripts": {
+    "test": "standard && hallmark && depcheck",
+    "pack": "npm-run-all pack:*",
+    "pack:pre": "mkdirp dist && rimraf dist/*",
+    "pack:win": "pkg -t node12-win-x64 -o dist/windows-x64/dotnet-bump.exe .",
+    "pack:linux": "pkg -t node12-linux-x64 -o dist/linux-x64/dotnet-bump .",
+    "pack:macos": "pkg -t node12-macos-x64 -o dist/macos-x64/dotnet-bump .",
+    "fix:js": "standard --fix",
+    "fix:md": "hallmark --fix"
+  },
+  "files": [
+    "lib",
+    "cli.js",
+    "index.js",
+    "usage.txt"
+  ],
+  "dependencies": {
+    "after": "0.8.2",
+    "assembly-source": "^1.0.0",
+    "common-roots": "0.0.1",
+    "glob": "^7.1.2",
+    "is-dirty": "0.2.1",
+    "is-glob": "^4.0.1",
+    "language-detect": "^1.1.0",
+    "minimist": "^1.2.0",
+    "once": "^1.4.0",
+    "readable-stream": "^3.6.0",
+    "run-series": "^1.1.4",
+    "saxophonist": "^2.0.0",
+    "semver": "^7.3.2",
+    "vssln-parser": "0.1.4"
+  },
+  "devDependencies": {
+    "depcheck": "^1.2.0",
+    "hallmark": "^3.0.0",
+    "mkdirp": "^1.0.4",
+    "npm-run-all": "^4.1.5",
+    "pkg": "^4.4.9",
+    "rimraf": "^3.0.2",
+    "standard": "^14.3.4"
+  },
+  "repository": "vweevers/dotnet-bump",
+  "bugs": "https://github.com/vweevers/dotnet-bump/issues",
+  "homepage": "https://github.com/vweevers/dotnet-bump",
+  "keywords": [
+    "assembly",
+    "csharp",
+    "csproj",
+    "cs",
+    "dotnet",
+    "semver",
+    "sln",
+    "version",
+    "visual-studio",
+    "vs",
+    "vssln"
+  ],
+  "engines": {
+    "node": ">=10"
+  }
+}

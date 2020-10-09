@@ -1,0 +1,33 @@
+name: Release
+on:
+  push:
+    tags:
+      - '**'
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use node 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install
+        run: npm i
+      - name: Pack
+        run: npm run pack
+      - name: Zip
+        run: |
+          zip --junk-paths dist/windows-x64.zip dist/windows-x64/*
+          zip --junk-paths dist/linux-x64.zip dist/linux-x64/*
+          zip --junk-paths dist/macos-x64.zip dist/macos-x64/*
+      - name: Create GitHub release
+        uses: docker://antonyurchenko/git-release:v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_TAG_PREFIX: "true"
+        with:
+          args: |
+            dist/*.zip
