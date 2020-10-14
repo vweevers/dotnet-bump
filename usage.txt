@@ -2,8 +2,8 @@ dotnet-bump <target> [options] [file..]
 
 Bump to target version, one of:
 
-- major, minor, patch;
-- a specific version like 2.4.0 (must be semver).
+- A release type: major, minor, patch, premajor, preminor, prepatch, prerelease;
+- A specific version like 2.4.0 (must be semver).
 
 Files can be glob patterns or paths to a:
 

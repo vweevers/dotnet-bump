@@ -3,16 +3,14 @@
 const semver = require('semver')
 const findRoots = require('common-roots')
 const isDirty = require('is-dirty')
-const Assembly = require('assembly-source')
 const after = require('after')
 const series = require('run-series')
 const cp = require('child_process')
 const path = require('path')
-const fs = require('fs')
 const Emitter = require('events').EventEmitter
 const Finder = require('./lib/finder')
 
-const TARGETS = new Set(['major', 'minor', 'patch'])
+const TARGETS = new Set(['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease'])
 const kLog = Symbol('kLog')
 
 module.exports = class Updater extends Emitter {
@@ -57,7 +55,6 @@ module.exports = class Updater extends Emitter {
 
         for (const file of files) {
           file.root = mapping[file.path]
-          file.relative = path.relative(file.root, file.path)
 
           if (rootFiles.has(file.root)) rootFiles.get(file.root).push(file)
           else rootFiles.set(file.root, [file])
@@ -75,8 +72,8 @@ module.exports = class Updater extends Emitter {
           }
 
           series([
-            (next) => readAssemblies(files, next),
-            (next) => updateAssemblies(files, target, next),
+            (next) => readFiles(files, next),
+            (next) => updateFiles(files, target, next),
             (next) => this.verify(files, next),
             (next) => this.save(files, next),
             (next) => this.stage(files, next),
@@ -91,10 +88,6 @@ module.exports = class Updater extends Emitter {
     const counts = {}
 
     for (const { version } of files) {
-      if (!version) {
-        throw new Error('Version missing on instance')
-      }
-
       counts[version] = (counts[version] || 0) + 1
     }
 
@@ -113,7 +106,7 @@ module.exports = class Updater extends Emitter {
         }
       }
 
-      return done(new Error(`Version mismatch between assemblies:\n\n${lines.join('\n')}`))
+      return done(new Error(`Version mismatch between files:\n\n${lines.join('\n')}`))
     }
 
     done()
@@ -125,7 +118,7 @@ module.exports = class Updater extends Emitter {
     const next = after(files.length, done)
 
     for (const file of files) {
-      fs.writeFile(file.path, file.assembly.toSource(), next)
+      file.write(next)
     }
   }
 
@@ -206,28 +199,26 @@ function dirtyWorkingTrees (roots, done) {
   }
 }
 
-function readAssemblies (files, done) {
+function readFiles (files, done) {
   const next = after(files.length, done)
 
   for (const file of files) {
-    fs.readFile(file.path, 'utf8', (err, source) => {
-      if (err) return next(err)
-
-      file.assembly = Assembly(source)
-      next()
-    })
+    file.read(next)
   }
 }
 
-function updateAssemblies (files, target, done) {
-  for (const file of files) {
-    const assembly = file.assembly
-    const currentRaw = assembly.get('AssemblyVersion')
+function updateFiles (files, target, done) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    const currentRaw = file.version
 
-    if (currentRaw == null) {
-      return done(new Error(`Could not find AssemblyVersion in ${shortPath(file.path)}`))
-    } else if (typeof currentRaw !== 'string') {
-      return done(new Error(`AssemblyVersion is not a string in ${shortPath(file.path)}`))
+    if (!currentRaw) {
+      files.splice(i--, 1)
+      continue
+    }
+
+    if (typeof currentRaw !== 'string') {
+      return done(new Error(`Version is not a string in ${shortPath(file.path)}`))
     }
 
     const hasRevision = /^\d+\.\d+\.\d+\.\d+$/.test(currentRaw)
@@ -246,21 +237,13 @@ function updateAssemblies (files, target, done) {
 
     if (current === next) {
       return done(new Error(`Target is equal to current version ${currentRaw} in ${shortPath(file.path)}`))
-    } else {
-      assembly.set('AssemblyVersion', next)
-    }
-
-    for (const additional of ['AssemblyFileVersion', 'AssemblyInformationalVersion']) {
-      const value = assembly.get(additional)
-
-      if (value === current || value === currentRaw) {
-        assembly.set(additional, next)
-      } else if (value != null) {
-        return done(new Error(`${additional} mismatch: ${JSON.stringify(value)} in ${shortPath(file.path)}`))
-      }
     }
 
     file.version = next
+  }
+
+  if (!files.length) {
+    return done(new Error('None of the files contain a version'))
   }
 
   done()
