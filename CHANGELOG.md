@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] - 2020-12-10
+
+### Added
+
+- Allow dirty `CHANGELOG.md`, committed together with version ([`36f1e40`](https://github.com/vweevers/dotnet-bump/commit/36f1e40))
+- Support json(5) files ([`4db88fe`](https://github.com/vweevers/dotnet-bump/commit/4db88fe))
+
+### Fixed
+
+- Fix repeated `setVersion()` on project file ([`8682d96`](https://github.com/vweevers/dotnet-bump/commit/8682d96))
+- Fix missing callback ([`5117188`](https://github.com/vweevers/dotnet-bump/commit/5117188))
+
 ## [1.1.0] - 2020-10-14
 
 ### Added
@@ -9,6 +21,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.2.0]: https://github.com/vweevers/dotnet-bump/compare/v1.1.0...v1.2.0
 
 [1.1.0]: https://github.com/vweevers/dotnet-bump/compare/v1.0.0...v1.1.0
 
