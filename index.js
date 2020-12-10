@@ -60,7 +60,7 @@ module.exports = class Updater extends Emitter {
           else rootFiles.set(file.root, [file])
         }
 
-        dirtyWorkingTrees(rootFiles.keys(), (err, dirtyTrees) => {
+        dirtyWorkingTrees(this, rootFiles.keys(), (err, dirtyTrees) => {
           if (err) return done(err)
 
           if (dirtyTrees.size && !this.force) {
@@ -184,19 +184,47 @@ module.exports = class Updater extends Emitter {
   }
 }
 
-function dirtyWorkingTrees (roots, done) {
+function dirtyWorkingTrees (updater, roots, done) {
   const dirtyTrees = new Map()
   const arr = Array.from(roots)
   const next = after(arr.length, (err) => done(err, dirtyTrees))
+  const types = ['staged', 'unstaged', 'untracked']
 
   for (const root of arr) {
     isDirty(root, (err, status) => {
       if (err) return next(err)
-      if (status) dirtyTrees.set(root, status)
+      if (!status) return next()
+
+      const extra = []
+
+      for (const type of types) {
+        // Allow changelog to be committed together with version
+        if (status[type].length > 0 && status[type].every(isChangelog)) {
+          extra.push(...status[type])
+          status[type] = []
+        }
+      }
+
+      if (types.some(type => status[type].length > 0)) {
+        // Can't continue without --force
+        dirtyTrees.set(root, status)
+      } else {
+        for (const change of extra) {
+          updater[kLog]('Stage %s (%s)', change.file, change.status)
+
+          if (!updater.dryRun) {
+            cp.execFileSync('git', ['add', change.file], { cwd: root })
+          }
+        }
+      }
 
       next()
     })
   }
+}
+
+function isChangelog (change) {
+  return /^(CHANGELOG|CHANGES|HISTORY)\.(md|markdown)$/i.test(change.file)
 }
 
 function readFiles (files, done) {
