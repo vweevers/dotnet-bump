@@ -9,7 +9,8 @@ Files can be glob patterns or paths to a:
 
 - Visual Studio Solution (*.sln) (parsed to find projects)
 - Project (*.csproj or *.fsproj) (parsed to find AssemblyInfo)
-- C# or F# source code file;
+- C# or F# source code file
+- JSON or JSON5 file;
 - Directory containing any of the above.
 
 Default is the current working directory. Files must reside
