@@ -1,6 +1,6 @@
 {
   "name": "dotnet-bump",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "CLI to increment and tag assembly version(s) in a .NET project",
   "bin": "cli.js",
   "license": "MIT",

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0] - 2020-12-22
+
+### Added
+
+- Support `.nuspec` files ([`3ea3d74`](https://github.com/vweevers/dotnet-bump/commit/3ea3d74))
+
 ## [1.2.0] - 2020-12-10
 
 ### Added
@@ -21,6 +27,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.3.0]: https://github.com/vweevers/dotnet-bump/compare/v1.2.0...v1.3.0
 
 [1.2.0]: https://github.com/vweevers/dotnet-bump/compare/v1.1.0...v1.2.0
 
