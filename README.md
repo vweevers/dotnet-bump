@@ -53,6 +53,7 @@ Files can be glob patterns or paths to a:
 
 - Visual Studio Solution (`*.sln`) (parsed to find projects)
 - Project (`*.csproj` or `*.fsproj`) (parsed to find a `Version` element or `AssemblyInfo` file)
+- A `.nuspec` file (containing a `version` element)
 - C# or F# source code file
 - JSON or JSON5 file;
 - Directory containing any of the above.
