@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.1] - 2021-01-02
+
+### Fixed
+
+- Fix staging of changelog when `--force` is present ([`d445594`](https://github.com/vweevers/dotnet-bump/commit/d445594))
+
 ## [1.3.0] - 2020-12-22
 
 ### Added
@@ -27,6 +33,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.3.1]: https://github.com/vweevers/dotnet-bump/compare/v1.3.0...v1.3.1
 
 [1.3.0]: https://github.com/vweevers/dotnet-bump/compare/v1.2.0...v1.3.0
 
