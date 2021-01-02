@@ -195,27 +195,28 @@ function dirtyWorkingTrees (updater, roots, done) {
       if (err) return next(err)
       if (!status) return next()
 
-      const extra = []
+      let hasDirty = false
 
       for (const type of types) {
         // Allow changelog to be committed together with version
-        if (status[type].length > 0 && status[type].every(isChangelog)) {
-          extra.push(...status[type])
-          status[type] = []
-        }
-      }
+        status[type] = status[type].filter(function (change) {
+          if (!isChangelog(change)) return true
 
-      if (types.some(type => status[type].length > 0)) {
-        // Can't continue without --force
-        dirtyTrees.set(root, status)
-      } else {
-        for (const change of extra) {
           updater[kLog]('Stage %s (%s)', change.file, change.status)
 
           if (!updater.dryRun) {
             cp.execFileSync('git', ['add', change.file], { cwd: root })
           }
-        }
+
+          return false
+        })
+
+        hasDirty = hasDirty || status[type].length > 0
+      }
+
+      if (hasDirty) {
+        // Can't continue without --force
+        dirtyTrees.set(root, status)
       }
 
       next()
