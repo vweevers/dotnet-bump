@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2] - 2021-01-19
+
+### Fixed
+
+- Replace `is-dirty` dependency ([`133eb8b`](https://github.com/vweevers/dotnet-bump/commit/133eb8b)).
+
 ## [1.3.1] - 2021-01-02
 
 ### Fixed
@@ -33,6 +39,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.3.2]: https://github.com/vweevers/dotnet-bump/compare/v1.3.1...v1.3.2
 
 [1.3.1]: https://github.com/vweevers/dotnet-bump/compare/v1.3.0...v1.3.1
 
