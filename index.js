@@ -2,7 +2,7 @@
 
 const semver = require('semver')
 const findRoots = require('common-roots')
-const isDirty = require('is-dirty')
+const parseGitStatus = require('parse-git-status')
 const after = require('after')
 const series = require('run-series')
 const cp = require('child_process')
@@ -64,11 +64,19 @@ module.exports = class Updater extends Emitter {
           if (err) return done(err)
 
           if (dirtyTrees.size && !this.force) {
-            const desc = dirtyTrees.size > 1 ? 'Working trees are dirty' : 'Working tree is dirty'
-            const paths = Array.from(dirtyTrees.keys()).join('\n- ')
             const hint = 'continue with --force'
 
-            return done(new Error(`${desc} (${hint}):\n\n- ${paths}`))
+            if (dirtyTrees.size > 1) {
+              const desc = 'Working trees are dirty'
+              const paths = Array.from(dirtyTrees.keys()).join('\n- ')
+
+              return done(new Error(`${desc} (${hint}):\n\n- ${paths}`))
+            } else {
+              const desc = 'Working tree is dirty'
+              const paths = Array.from(dirtyTrees.values())[0].join('\n ')
+
+              return done(new Error(`${desc} (${hint}):\n\n ${paths}`))
+            }
           }
 
           series([
@@ -188,35 +196,41 @@ function dirtyWorkingTrees (updater, roots, done) {
   const dirtyTrees = new Map()
   const arr = Array.from(roots)
   const next = after(arr.length, (err) => done(err, dirtyTrees))
-  const types = ['staged', 'unstaged', 'untracked']
 
-  for (const root of arr) {
-    isDirty(root, (err, status) => {
-      if (err) return next(err)
-      if (!status) return next()
+  function isDirty (cwd, callback) {
+    const args = ['status', '--porcelain', '--untracked-files=all', '--ignored=no', '-z']
+    const opts = { cwd, encoding: 'utf8' }
 
-      let hasDirty = false
+    cp.execFile('git', args, opts, function (err, stdout) {
+      if (err) return callback(err)
 
-      for (const type of types) {
+      const statusObjects = parseGitStatus(stdout)
+      const dirtyLines = []
+
+      for (const { x, y, from, to } of statusObjects) {
         // Allow changelog to be committed together with version
-        status[type] = status[type].filter(function (change) {
-          if (!isChangelog(change)) return true
-
-          updater[kLog]('Stage %s (%s)', change.file, change.status)
+        if (isChangelog(to)) {
+          updater[kLog]('Stage %s', to)
 
           if (!updater.dryRun) {
-            cp.execFileSync('git', ['add', change.file], { cwd: root })
+            cp.execFileSync('git', ['add', to], { cwd })
           }
-
-          return false
-        })
-
-        hasDirty = hasDirty || status[type].length > 0
+        } else {
+          dirtyLines.push(x + y + ' ' + (from ? `${from} -> ${to}` : to))
+        }
       }
 
-      if (hasDirty) {
+      callback(null, dirtyLines)
+    })
+  }
+
+  for (const root of arr) {
+    isDirty(root, (err, dirtyLines) => {
+      if (err) return next(err)
+
+      if (dirtyLines.length) {
         // Can't continue without --force
-        dirtyTrees.set(root, status)
+        dirtyTrees.set(root, dirtyLines)
       }
 
       next()
@@ -224,8 +238,8 @@ function dirtyWorkingTrees (updater, roots, done) {
   }
 }
 
-function isChangelog (change) {
-  return /^(CHANGELOG|CHANGES|HISTORY)\.(md|markdown)$/i.test(change.file)
+function isChangelog (file) {
+  return /^(CHANGELOG|CHANGES|HISTORY)\.(md|markdown)$/i.test(file)
 }
 
 function readFiles (files, done) {
