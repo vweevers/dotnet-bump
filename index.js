@@ -208,8 +208,7 @@ function dirtyWorkingTrees (updater, roots, done) {
       const dirtyLines = []
 
       for (const { x, y, from, to } of statusObjects) {
-        // Allow changelog to be committed together with version
-        if (isChangelog(to)) {
+        if (autoStage(to)) {
           updater[kLog]('Stage %s', to)
 
           if (!updater.dryRun) {
@@ -238,8 +237,9 @@ function dirtyWorkingTrees (updater, roots, done) {
   }
 }
 
-function isChangelog (file) {
-  return /^(CHANGELOG|CHANGES|HISTORY)\.(md|markdown)$/i.test(file)
+function autoStage (file) {
+  // Allow changelog, upgrade guide and readme to be committed together with version
+  return /^(CHANGELOG|CHANGES|HISTORY|UPGRADING|README)\.(md|markdown)$/i.test(file)
 }
 
 function readFiles (files, done) {
