@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2021-06-09
+
+### Added
+
+- Auto-stage upgrade guide and readme (in addition to changelog) ([`743d94f`](https://github.com/vweevers/dotnet-bump/commit/743d94f))
+- Support `AssemblyInfo.cs` in SDK project that doesn't explicitly include it ([`f7167c1`](https://github.com/vweevers/dotnet-bump/commit/f7167c1))
+
 ## [1.3.2] - 2021-01-19
 
 ### Fixed
@@ -39,6 +46,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.4.0]: https://github.com/vweevers/dotnet-bump/compare/v1.3.2...v1.4.0
 
 [1.3.2]: https://github.com/vweevers/dotnet-bump/compare/v1.3.1...v1.3.2
 
