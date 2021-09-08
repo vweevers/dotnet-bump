@@ -6,6 +6,7 @@
 [![node](https://img.shields.io/node/v/dotnet-bump.svg)](https://www.npmjs.org/package/dotnet-bump)
 ![Test](https://github.com/vweevers/dotnet-bump/workflows/Test/badge.svg)
 ![Release](https://github.com/vweevers/dotnet-bump/workflows/Release/badge.svg)
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
 ## Table of Contents
 
