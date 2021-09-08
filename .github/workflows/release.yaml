@@ -24,10 +24,9 @@ jobs:
           zip --junk-paths dist/linux-x64.zip dist/linux-x64/*
           zip --junk-paths dist/macos-x64.zip dist/macos-x64/*
       - name: Create GitHub release
-        uses: docker://antonyurchenko/git-release:v3
+        uses: docker://antonyurchenko/git-release:v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ALLOW_TAG_PREFIX: "true"
         with:
           args: |
             dist/*.zip
