@@ -239,7 +239,12 @@ function dirtyWorkingTrees (updater, roots, done) {
 
 function autoStage (file) {
   // Allow changelog, upgrade guide and readme to be committed together with version
-  return /^(CHANGELOG|CHANGES|HISTORY|UPGRADING|README)\.(md|markdown)$/i.test(file)
+  if (/^(CHANGELOG|CHANGES|HISTORY|UPGRADING|README)\.(md|markdown)$/i.test(file)) return true
+
+  // Same for resource files and version.h used in C++ projects
+  if (file.endsWith('.rc') || path.basename(file) === 'version.h') return true
+
+  return false
 }
 
 function readFiles (files, done) {
