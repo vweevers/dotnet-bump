@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2021-09-10
+
+### Added
+
+- Include nuspec files of debug packages (`projectname.Debug.nuspec`) ([`57b80dd`](https://github.com/vweevers/dotnet-bump/commit/57b80dd))
+
 ## [1.5.0] - 2021-09-08
 
 ### Added
@@ -56,6 +62,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[1.6.0]: https://github.com/vweevers/dotnet-bump/compare/v1.5.0...v1.6.0
 
 [1.5.0]: https://github.com/vweevers/dotnet-bump/releases/tag/v1.5.0
 
