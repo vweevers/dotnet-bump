@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0] - 2022-07-29
+
+### Changed
+
+- **Breaking:** bump `glob` from 7 to 8 ([`d6d779f`](https://github.com/vweevers/dotnet-bump/commit/d6d779f)) (Vincent Weevers)
+- Bump `readable-stream` from 3 to 4 ([`daa2148`](https://github.com/vweevers/dotnet-bump/commit/daa2148)) (Vincent Weevers)
+
+### Added
+
+- Support `version.h` files of C(++) projects ([`8bc6af3`](https://github.com/vweevers/dotnet-bump/commit/8bc6af3)) (Vincent Weevers)
+
 ## [1.6.0] - 2021-09-10
 
 ### Added
@@ -62,6 +73,8 @@
 ## [1.0.0] - 2020-10-10
 
 First release. :seedling:
+
+[2.0.0]: https://github.com/vweevers/dotnet-bump/releases/tag/v2.0.0
 
 [1.6.0]: https://github.com/vweevers/dotnet-bump/compare/v1.5.0...v1.6.0
 

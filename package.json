@@ -1,6 +1,6 @@
 {
   "name": "dotnet-bump",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "CLI to increment and git-tag the version of .NET, C(++) and npm projects",
   "bin": "cli.js",
   "license": "MIT",
