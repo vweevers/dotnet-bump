@@ -1,6 +1,6 @@
 # dotnet-bump
 
-**CLI to increment and tag assembly version(s) in a .NET project. Supports SDK-style and non-SDK projects.**
+**CLI to increment and git-tag the version of .NET, C(++) and npm projects.** Geared towards Visual Studio projects.
 
 [![npm status](http://img.shields.io/npm/v/dotnet-bump.svg)](https://www.npmjs.org/package/dotnet-bump)
 [![node](https://img.shields.io/node/v/dotnet-bump.svg)](https://www.npmjs.org/package/dotnet-bump)
@@ -8,31 +8,19 @@
 ![Release](https://github.com/vweevers/dotnet-bump/workflows/Release/badge.svg)
 [![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
-## Table of Contents
-
-<details><summary>Click to expand</summary>
-
-- [Example](#example)
-- [Usage](#usage)
-  - [Options](#options)
-- [Install](#install)
-- [License](#license)
-
-</details>
-
 ## Example
 
 ```
 > dotnet-bump minor --dry-run
 - Would stage Foo\Foo.csproj
-- Would stage Bar\Properties\AssemblyInfo.cs
+- Would stage Bar\version.h
 - Would commit and tag v1.1.0
 ```
 
 ```
 > dotnet-bump minor
 - Stage Foo\Foo.csproj
-- Stage Bar\Properties\AssemblyInfo.cs
+- Stage Bar\version.h
 - Commit and tag v1.1.0
 ```
 
@@ -52,11 +40,13 @@ Bump to `target` version, one of:
 
 Files can be glob patterns or paths to a:
 
-- Visual Studio Solution (`*.sln`) (parsed to find projects)
-- Project (`*.csproj` or `*.fsproj`) (parsed to find a `Version` element or `AssemblyInfo` file)
-- A `.nuspec` file (containing a `version` element)
-- C# or F# source code file
-- JSON or JSON5 file;
+- `*.sln` Visual Studio solution (parsed to find projects)
+- `*.csproj` or `*.fsproj` project (parsed to find a `Version` element or `AssemblyInfo` file)
+- `*.cs` or `*.fs` file (containing assembly attributes, see below)
+- `*.nuspec` file (containing a `version` element)
+- `*.vcxproj` project (used to discover `version.h` files in the same directory)
+- `version.h` file (see below)
+- `*.json` or `*.json5` file (containing a `version`);
 - Directory containing any of the above.
 
 Default is the current working directory. Files must reside in a git working tree (or multiple working trees).
@@ -72,6 +62,76 @@ Default is the current working directory. Files must reside in a git working tre
 --version  -v  Print version and exit
 --help     -h  Print usage and exit
 ```
+
+## Supported patterns
+
+### .NET projects
+
+Both legacy-style projects (that use assembly attributes) and SDK-style projects (that commonly use a `Version` element) are supported. For example, `dotnet-bump` would replace the `1.2.3` string here:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.2.3</Version>
+  </PropertyGroup>
+</Project>
+```
+
+If the project is published as a NuGet package, the project version can usually serve as the source of truth. Other times a custom `*.nuspec` file may be necessary. For example:
+
+```xml
+<package xmlns="..">
+  <metadata>
+    <id>Example</id>
+    <version>1.2.3</version>
+  </metadata>
+  <files>
+    <file src="Example.dll" target="build\native\x64\bin" />
+    <file src="Example.targets" target="build\Example.targets" />
+  </files>
+</package>
+```
+
+### Assembly attributes (C# / F#)
+
+If an `AssemblyInfo.cs` file is found then `dotnet-bump` will replace the following attribute and leave other attributes as-is. If a version has four numeric components (`1.2.3.0`) then the last component (`.0`) will be stripped.
+
+```cs
+[assembly: AssemblyVersion("1.2.3")]
+```
+
+If `AssemblyFileVersion` and / or `AssemblyInformationalVersion` attributes are present they will be updated as well, but only if `AssemblyVersion` is present because it is used to determine the current version.
+
+```cs
+[assembly: AssemblyFileVersion("1.2.3")]
+[assembly: AssemblyInformationalVersion("1.2.3")]
+```
+
+### `version.h` (C / C++)
+
+One of the following combination of constants can be used, and must be written exactly as below with optional added whitespace (though `dotnet-bump` will strip such whitespace). Other lines in the `version.h` file will be left alone.
+
+```c
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 2
+#define VERSION_PATCH 3
+```
+
+```c
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 2
+#define VERSION_PATCH 3
+#define VERSION_BUILD 0
+```
+
+```c
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 2
+#define VERSION_BUILD 3
+#define VERSION_REVISION 0
+```
+
+If the combination has four constants, the last constant will be ignored (on read) and set to `0` (on write).
 
 ## Install
 
