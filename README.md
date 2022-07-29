@@ -51,6 +51,8 @@ Files can be glob patterns or paths to a:
 
 Default is the current working directory. Files must reside in a git working tree (or multiple working trees).
 
+Glob patterns must use forward slashes (`/`) even on Windows, because the backward slash (`\`) is an escape character. This means `dotnet-bump patch example\*.h` should be `dotnet-bump patch example/*.h`. Backward slashes do work if the given argument is not a glob pattern, because `dotnet-bump` will interpret it as a file path: `dotnet-bump patch example\version.h`.
+
 ### Options
 
 ```
